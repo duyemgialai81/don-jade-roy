@@ -1,0 +1,3295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNFAIR ODYSSEY PRO: ULTIMATE EDITION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --danger: #ff0055;
+            --warning: #ffaa00;
+            --success: #00ff88;
+            --waifu: #ff85a1;
+            --bg: #020205;
+            --neon-glow: 0 0 5px var(--primary), 0 0 10px var(--primary), 0 0 20px var(--primary);
+        }
+
+        * { box-sizing: border-box; }
+        
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Rajdhani', sans-serif; 
+            overflow: hidden; 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            user-select: none;
+        }
+
+        /* Scanline Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 9999;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
+        }
+
+        /* Game Container */
+        #stage {
+            position: relative; 
+            width: 1200px; 
+            height: 650px;
+            background: #050508; 
+            border: 2px solid var(--primary);
+            overflow: hidden; 
+            box-shadow: 
+                0 0 50px rgba(0, 242, 255, 0.3),
+                inset 0 0 100px rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+        }
+
+        /* Parallax Layers */
+        .layer { 
+            position: absolute; 
+            inset: 0; 
+            pointer-events: none; 
+        }
+
+        .sky { 
+            background: radial-gradient(ellipse at bottom, #1a1a3e 0%, #0a0a1e 50%, #020205 100%);
+        }
+
+        .stars { 
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, white, transparent),
+                radial-gradient(2px 2px at 60px 70px, white, transparent),
+                radial-gradient(1px 1px at 50px 50px, white, transparent),
+                radial-gradient(1px 1px at 130px 80px, white, transparent),
+                radial-gradient(2px 2px at 90px 10px, white, transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: starsMove 120s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes starsMove {
+            from { transform: translateX(0); }
+            to { transform: translateX(-200px); }
+        }
+
+        /* Nebula effect */
+        .nebula {
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(112, 0, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(0, 242, 255, 0.2) 0%, transparent 50%);
+            animation: nebulaShift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes nebulaShift {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.5; transform: scale(1.1); }
+        }
+
+        /* Mountains layers */
+        .mountains-far {
+            bottom: 80px;
+            height: 250px;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 242, 255, 0.08) 100%);
+            clip-path: polygon(
+                0% 70%, 10% 50%, 20% 60%, 30% 40%, 40% 55%, 
+                50% 35%, 60% 50%, 70% 30%, 80% 45%, 90% 35%, 100% 50%, 
+                100% 100%, 0% 100%
+            );
+        }
+
+        .mountains-near {
+            bottom: 80px;
+            height: 180px;
+            background: linear-gradient(to bottom, transparent 0%, rgba(112, 0, 255, 0.15) 100%);
+            clip-path: polygon(
+                0% 60%, 15% 45%, 25% 55%, 35% 35%, 45% 50%, 
+                55% 30%, 65% 45%, 75% 25%, 85% 40%, 95% 30%, 100% 45%, 
+                100% 100%, 0% 100%
+            );
+        }
+
+        /* Grid Floor */
+        #floor {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background: 
+                linear-gradient(180deg, #0f172a 0%, #020617 50%, #000000 100%),
+                repeating-linear-gradient(90deg, transparent, transparent 49px, var(--primary) 49px, var(--primary) 50px),
+                repeating-linear-gradient(0deg, transparent, transparent 49px, var(--primary) 49px, var(--primary) 50px);
+            background-size: 100% 100%, 50px 50px, 50px 50px;
+            border-top: 3px solid var(--primary);
+            box-shadow: 0 -5px 30px rgba(0, 242, 255, 0.3);
+            z-index: 100;
+            animation: gridMove 2s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0, 0 0, 0 0; }
+            100% { background-position: 0 0, -50px 0, 0 -50px; }
+        }
+
+        /* Player - Advanced Stickman */
+        #player {
+            position: absolute;
+            width: 35px;
+            height: 60px;
+            bottom: 80px;
+            left: 120px;
+            z-index: 110;
+            will-change: transform, bottom, left;
+            filter: drop-shadow(0 0 10px var(--primary));
+            transition: filter 0.3s;
+        }
+
+        #player.invincible {
+            animation: invincibleBlink 0.2s infinite;
+        }
+
+        @keyframes invincibleBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .head {
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #e0e0e0);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 7px;
+            box-shadow: var(--neon-glow);
+            border: 2px solid var(--primary);
+        }
+
+        .eye {
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+            animation: blink 4s infinite;
+        }
+
+        .eye-left { left: 5px; }
+        .eye-right { left: 11px; }
+
+        @keyframes blink {
+            0%, 98%, 100% { height: 4px; }
+            99% { height: 1px; }
+        }
+
+        .torso {
+            width: 5px;
+            height: 24px;
+            background: linear-gradient(180deg, #ffffff, #cccccc);
+            position: absolute;
+            top: 20px;
+            left: 15px;
+            border-radius: 3px;
+            box-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+        }
+
+        .arm {
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, #ffffff, #cccccc);
+            position: absolute;
+            top: 22px;
+            border-radius: 2px;
+            transform-origin: top;
+        }
+
+        .arm-left { left: 10px; transform: rotate(-30deg); }
+        .arm-right { left: 21px; transform: rotate(30deg); }
+
+        .leg {
+            width: 5px;
+            height: 20px;
+            background: linear-gradient(180deg, #ffffff, #cccccc);
+            position: absolute;
+            top: 40px;
+            left: 15px;
+            transform-origin: top;
+            border-radius: 2px;
+        }
+
+        .running .leg-l { animation: runLeg 0.3s infinite alternate; }
+        .running .leg-r { animation: runLeg 0.3s infinite alternate-reverse; }
+        .running .arm-left { animation: runArm 0.3s infinite alternate-reverse; }
+        .running .arm-right { animation: runArm 0.3s infinite alternate; }
+
+        @keyframes runLeg {
+            from { transform: rotate(-50deg); }
+            to { transform: rotate(50deg); }
+        }
+
+        @keyframes runArm {
+            from { transform: rotate(-60deg); }
+            to { transform: rotate(60deg); }
+        }
+
+        .sliding {
+            transform: scaleY(0.4) !important;
+            transform-origin: bottom !important;
+        }
+
+        .jumping .leg-l,
+        .jumping .leg-r {
+            animation: none !important;
+            transform: rotate(0deg) !important;
+        }
+
+        /* Particles System */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 105;
+        }
+
+        .dust-particle {
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: dustFloat 1s ease-out forwards;
+        }
+
+        @keyframes dustFloat {
+            0% { 
+                transform: translate(0, 0) scale(1); 
+                opacity: 0.8; 
+            }
+            100% { 
+                transform: translate(var(--tx), var(--ty)) scale(0); 
+                opacity: 0; 
+            }
+        }
+
+        .death-particle {
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--danger);
+            animation: deathExplode 0.8s ease-out forwards;
+        }
+
+        @keyframes deathExplode {
+            0% { 
+                transform: translate(0, 0) scale(1); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translate(var(--tx), var(--ty)) scale(0); 
+                opacity: 0; 
+            }
+        }
+
+        /* Traps & Obstacles */
+        .trap {
+            position: absolute;
+            z-index: 105;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* Spike Trap */
+        .spike-trap {
+            width: 40px;
+            height: 40px;
+            bottom: 80px;
+        }
+
+        .spike {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 40px solid var(--danger);
+            filter: drop-shadow(0 0 15px var(--danger));
+            position: relative;
+            animation: spikeGlow 2s ease-in-out infinite;
+        }
+
+        .spike::before,
+        .spike::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid var(--danger);
+        }
+
+        .spike::before { left: -30px; }
+        .spike::after { left: 10px; }
+
+        @keyframes spikeGlow {
+            0%, 100% { filter: drop-shadow(0 0 15px var(--danger)); }
+            50% { filter: drop-shadow(0 0 25px var(--danger)) drop-shadow(0 0 35px var(--danger)); }
+        }
+
+        /* Laser Beam */
+        .laser-beam {
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                var(--danger) 10%, 
+                var(--danger) 90%, 
+                transparent 100%
+            );
+            box-shadow: 
+                0 0 10px var(--danger),
+                0 0 20px var(--danger),
+                0 0 30px var(--danger);
+            animation: laserPulse 1s ease-in-out infinite;
+            position: relative;
+        }
+
+        .laser-beam::before,
+        .laser-beam::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: radial-gradient(circle, var(--danger), transparent);
+            border-radius: 50%;
+            animation: laserNode 1s ease-in-out infinite;
+        }
+
+        .laser-beam::before { top: -10px; }
+        .laser-beam::after { bottom: -10px; }
+
+        @keyframes laserPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes laserNode {
+            0%, 100% { 
+                box-shadow: 0 0 10px var(--danger);
+                transform: translateX(-50%) scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 20px var(--danger);
+                transform: translateX(-50%) scale(1.3);
+            }
+        }
+
+        /* Saw Blade */
+        .saw-blade {
+            width: 50px;
+            height: 50px;
+            bottom: 80px;
+        }
+
+        .saw {
+            width: 100%;
+            height: 100%;
+            background: 
+                conic-gradient(from 0deg, 
+                    var(--danger) 0deg 30deg,
+                    transparent 30deg 60deg,
+                    var(--danger) 60deg 90deg,
+                    transparent 90deg 120deg,
+                    var(--danger) 120deg 150deg,
+                    transparent 150deg 180deg,
+                    var(--danger) 180deg 210deg,
+                    transparent 210deg 240deg,
+                    var(--danger) 240deg 270deg,
+                    transparent 270deg 300deg,
+                    var(--danger) 300deg 330deg,
+                    transparent 330deg 360deg
+                );
+            border-radius: 50%;
+            animation: sawRotate 1s linear infinite;
+            box-shadow: 
+                0 0 20px var(--danger),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .saw::before {
+            content: '';
+            position: absolute;
+            inset: 15px;
+            background: #222;
+            border-radius: 50%;
+            border: 3px solid var(--danger);
+        }
+
+        @keyframes sawRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Moving Platform */
+        .moving-platform {
+            width: 100px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--primary), #0088aa);
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+            position: absolute;
+            z-index: 104;
+        }
+
+        /* Falling Platform */
+        .falling-platform {
+            width: 100px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--warning), #cc8800);
+            border: 2px solid var(--warning);
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.5);
+            position: absolute;
+            z-index: 104;
+        }
+
+        .falling-platform.falling {
+            animation: platformFall 1s ease-in forwards;
+        }
+
+        @keyframes platformFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(600px) rotate(180deg); opacity: 0; }
+        }
+
+        /* Teleporter */
+        .teleporter {
+            width: 40px;
+            height: 80px;
+            background: linear-gradient(180deg, 
+                transparent,
+                rgba(112, 0, 255, 0.3),
+                rgba(112, 0, 255, 0.6),
+                rgba(112, 0, 255, 0.3),
+                transparent
+            );
+            border-left: 2px solid var(--secondary);
+            border-right: 2px solid var(--secondary);
+            box-shadow: 
+                0 0 20px var(--secondary),
+                inset 0 0 20px var(--secondary);
+            animation: teleportPulse 2s ease-in-out infinite;
+            position: absolute;
+            bottom: 80px;
+            z-index: 103;
+        }
+
+        @keyframes teleportPulse {
+            0%, 100% { 
+                opacity: 0.6;
+                transform: scaleY(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: scaleY(1.1);
+            }
+        }
+
+        /* Electric Field */
+        .electric-field {
+            width: 80px;
+            height: 150px;
+            position: absolute;
+            bottom: 80px;
+            overflow: hidden;
+            z-index: 103;
+        }
+
+        .lightning {
+            position: absolute;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                var(--warning),
+                var(--primary),
+                var(--warning)
+            );
+            box-shadow: 0 0 10px var(--warning);
+            animation: lightningStrike 0.5s ease-in-out infinite;
+            left: var(--pos);
+        }
+
+        @keyframes lightningStrike {
+            0%, 100% { opacity: 0; transform: scaleY(0); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* Checkpoint */
+        .checkpoint {
+            width: 50px;
+            height: 80px;
+            position: absolute;
+            bottom: 80px;
+            z-index: 102;
+        }
+
+        .checkpoint-pole {
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #444, #222);
+            position: absolute;
+            left: 23px;
+            border-radius: 2px;
+        }
+
+        .checkpoint-flag {
+            width: 30px;
+            height: 20px;
+            background: var(--success);
+            position: absolute;
+            top: 10px;
+            left: 25px;
+            clip-path: polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%);
+            box-shadow: 0 0 15px var(--success);
+            animation: flagWave 2s ease-in-out infinite;
+        }
+
+        .checkpoint.inactive .checkpoint-flag {
+            background: #444;
+            box-shadow: none;
+        }
+
+        @keyframes flagWave {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(15deg); }
+        }
+
+        /* Coin Collectible */
+        .coin {
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, var(--warning), #cc8800);
+            border-radius: 50%;
+            border: 3px solid var(--warning);
+            box-shadow: 
+                0 0 15px var(--warning),
+                inset 0 0 10px rgba(255, 255, 255, 0.3);
+            position: absolute;
+            z-index: 105;
+            animation: coinFloat 2s ease-in-out infinite;
+        }
+
+        .coin::before {
+            content: '$';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #000;
+        }
+
+        @keyframes coinFloat {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(180deg); }
+        }
+
+        /* Waifu Target */
+        #waifu {
+            position: absolute;
+            bottom: 80px;
+            right: 100px;
+            width: 50px;
+            height: 80px;
+            display: none;
+            z-index: 106;
+            text-align: center;
+            animation: waifuFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes waifuFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .waifu-label {
+            font-size: 10px;
+            color: var(--waifu);
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--waifu);
+            font-weight: bold;
+            animation: labelPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes labelPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .waifu-sprite {
+            width: 30px;
+            height: 55px;
+            background: linear-gradient(180deg, var(--waifu), #ff6b8a);
+            border-radius: 15px 15px 10px 10px;
+            margin: 0 auto;
+            box-shadow: 
+                0 0 25px var(--waifu),
+                inset 0 0 15px rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .waifu-sprite::before {
+            content: '♥';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            color: white;
+            animation: heartBeat 1s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.2); }
+        }
+
+        /* HUD System */
+        .hud {
+            position: absolute;
+            top: 25px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-family: 'Orbitron';
+            font-size: 14px;
+            z-index: 1000;
+            pointer-events: none;
+            gap: 15px;
+        }
+
+        .hud-item {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .hud-label {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 11px;
+            margin-bottom: 3px;
+        }
+
+        .hud-value {
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: absolute;
+            top: 80px;
+            left: 30px;
+            right: 30px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            box-shadow: 0 0 15px var(--primary);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Mini Map */
+        .minimap {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 200px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            z-index: 1000;
+            padding: 5px;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+        }
+
+        .minimap-player {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 5px var(--primary);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .minimap-trap {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--danger);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .minimap-end {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+            top: 50%;
+            right: 5px;
+            transform: translateY(-50%);
+        }
+
+        /* Overlay System */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(20px);
+            animation: overlayFadeIn 0.3s ease-out;
+        }
+
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            padding: 50px 60px;
+            border: 2px solid var(--primary);
+            background: linear-gradient(135deg, #0a0a12 0%, #15152a 100%);
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 
+                0 0 50px rgba(0, 242, 255, 0.3),
+                inset 0 0 30px rgba(0, 0, 0, 0.5);
+            animation: cardSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 600px;
+        }
+
+        @keyframes cardSlideIn {
+            from { 
+                transform: translateY(-50px) scale(0.9);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .card h1 {
+            margin: 0 0 20px 0;
+            font-family: 'Orbitron';
+            font-size: 42px;
+            font-weight: 900;
+            text-shadow: 0 0 20px currentColor;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px currentColor; }
+            50% { text-shadow: 0 0 30px currentColor, 0 0 40px currentColor; }
+        }
+
+        .card p {
+            color: #aaa;
+            margin: 20px 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+
+        button {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 15px 50px;
+            cursor: pointer;
+            font-family: 'Orbitron';
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            margin: 10px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        button:hover::before {
+            transform: scaleX(1);
+        }
+
+        button:hover {
+            color: #000;
+            box-shadow: 0 0 30px var(--primary);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Tutorial Tooltip */
+        .tutorial {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--primary);
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            z-index: 1500;
+            animation: tooltipBounce 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes tooltipBounce {
+            0%, 100% { transform: translate(-50%, -50%); }
+            50% { transform: translate(-50%, -55%); }
+        }
+
+        .tutorial h3 {
+            color: var(--primary);
+            margin: 0 0 15px 0;
+            font-family: 'Orbitron';
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key {
+            background: var(--primary);
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: 'Orbitron';
+            min-width: 40px;
+            text-align: center;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            display: none;
+            position: absolute;
+            bottom: 120px;
+            left: 0;
+            right: 0;
+            z-index: 1500;
+            justify-content: space-around;
+            padding: 0 30px;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 242, 255, 0.2);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+        }
+
+        .control-btn:active {
+            background: rgba(0, 242, 255, 0.5);
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 1250px) {
+            #stage { width: 100vw; height: 100vh; border-radius: 0; }
+            .mobile-controls { display: flex; }
+        }
+
+        /* Warning Signs */
+        .warning-sign {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            bottom: 140px;
+            z-index: 108;
+            animation: warningBlink 0.5s ease-in-out infinite;
+        }
+
+        .warning-triangle {
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 35px solid var(--warning);
+            position: relative;
+            filter: drop-shadow(0 0 10px var(--warning));
+        }
+
+        .warning-triangle::before {
+            content: '!';
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        @keyframes warningBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Achievement Popup */
+        .achievement {
+            position: absolute;
+            top: 120px;
+            right: -400px;
+            width: 350px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--success);
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 3000;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .achievement.show {
+            right: 30px;
+        }
+
+        .achievement-title {
+            color: var(--success);
+            font-family: 'Orbitron';
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--success);
+        }
+
+        .achievement-desc {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* ==================== MOBILE LANDSCAPE & LOADING ==================== */
+        .rotate-message {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 99999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .rotate-icon {
+            font-size: 80px;
+            animation: rotatePhone 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes rotatePhone {
+            0%, 100% { transform: rotate(0deg); }
+            25%, 75% { transform: rotate(-90deg); }
+        }
+
+        .rotate-text {
+            font-family: 'Orbitron';
+            font-size: 24px;
+            color: var(--primary);
+            text-shadow: var(--neon-glow);
+            margin-bottom: 10px;
+        }
+
+        .rotate-subtext {
+            font-size: 16px;
+            color: #888;
+        }
+
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            .rotate-message {
+                display: flex !important;
+            }
+            #game-container {
+                display: none !important;
+            }
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #020205 0%, #0a0a1e 50%, #020205 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-logo {
+            font-family: 'Orbitron';
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: var(--neon-glow);
+            margin-bottom: 40px;
+            animation: logoGlow 2s ease-in-out infinite;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .loading-subtitle {
+            font-size: clamp(14px, 3vw, 20px);
+            color: var(--danger);
+            margin-bottom: 60px;
+            animation: blink 1s infinite;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .loading-bar-container {
+            width: 80%;
+            max-width: 500px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+        }
+
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 2s infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: clamp(12px, 2vw, 16px);
+            color: var(--primary);
+            font-family: 'Orbitron';
+            text-align: center;
+        }
+
+        .loading-tips {
+            margin-top: 40px;
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: clamp(12px, 2vw, 15px);
+            line-height: 1.6;
+        }
+
+        .tip-label {
+            color: var(--warning);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Main Menu */
+        #main-menu {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #020205 0%, #1a1a2e 50%, #020205 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9000;
+            padding: 20px;
+        }
+
+        #main-menu.active {
+            display: flex;
+        }
+
+        .menu-logo {
+            font-family: 'Orbitron';
+            font-size: clamp(36px, 7vw, 64px);
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: var(--neon-glow);
+            margin-bottom: 20px;
+            animation: logoGlow 2s ease-in-out infinite;
+            text-align: center;
+        }
+
+        .menu-subtitle {
+            font-size: clamp(16px, 3vw, 22px);
+            color: var(--danger);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: clamp(15px, 2.5vw, 20px) clamp(40px, 6vw, 60px);
+            cursor: pointer;
+            font-family: 'Orbitron';
+            font-size: clamp(16px, 3vw, 20px);
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        .menu-btn:hover::before,
+        .menu-btn:active::before {
+            transform: scaleX(1);
+        }
+
+        .menu-btn:hover,
+        .menu-btn:active {
+            color: #000;
+            box-shadow: 0 0 30px var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .menu-stats {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        /* Level Select */
+        #level-select {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #020205 0%, #0a0a1e 50%, #020205 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            z-index: 9000;
+            overflow-y: auto;
+        }
+
+        #level-select.active {
+            display: flex;
+        }
+
+        .level-select-header {
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .level-select-title {
+            font-family: 'Orbitron';
+            font-size: clamp(28px, 6vw, 48px);
+            color: var(--primary);
+            text-shadow: var(--neon-glow);
+            margin-bottom: 15px;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 30px;
+        }
+
+        .level-card {
+            background: linear-gradient(135deg, #0a0a12 0%, #15152a 100%);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 0;
+        }
+
+        .level-card:hover::before,
+        .level-card:active::before {
+            opacity: 0.1;
+        }
+
+        .level-card:hover,
+        .level-card:active {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 242, 255, 0.5);
+        }
+
+        .level-card.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: #444;
+        }
+
+        .level-card.locked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .level-number {
+            font-family: 'Orbitron';
+            font-size: clamp(32px, 6vw, 42px);
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .level-name {
+            font-size: clamp(13px, 2.5vw, 16px);
+            color: #aaa;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .level-stats {
+            display: flex;
+            justify-content: space-around;
+            font-size: clamp(11px, 2vw, 13px);
+            color: #666;
+            position: relative;
+            z-index: 1;
+        }
+
+        .level-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .level-stat-icon {
+            font-size: clamp(18px, 3vw, 22px);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 12px 40px;
+            cursor: pointer;
+            font-family: 'Orbitron';
+            font-size: clamp(16px, 2.5vw, 20px);
+            font-weight: 700;
+            transition: all 0.3s;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover,
+        .back-btn:active {
+            background: var(--danger);
+            color: #000;
+            box-shadow: 0 0 30px var(--danger);
+        }
+
+        /* Pause Menu */
+        .pause-btn {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            font-size: 20px;
+            color: var(--primary);
+            transition: all 0.3s;
+            pointer-events: all;
+        }
+
+        .pause-btn:hover,
+        .pause-btn:active {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        #pause-overlay .card {
+            max-width: 500px;
+        }
+
+        .pause-menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .pause-menu-buttons button {
+            width: 100%;
+            margin: 0;
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #stage.hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Rotate Screen Message -->
+    <div class="rotate-message">
+        <div class="rotate-icon">ơ↻</div>
+        <div class="rotate-text">XIN VUI LÒNG XOAY NGANG</div>
+        <div class="rotate-subtext">Trải nghiệm tốt nhất ở chế độ ngang </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-logo">UNFAIR ODYSSEY</div>
+        <div class="loading-subtitle"> LƯƠNG 8 TRIỆU EDITION </div>
+        
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loading-bar"></div>
+        </div>
+        
+        <div class="loading-text" id="loading-text">Đang khởi động hệ thống...</div>
+        
+        <div class="loading-tips">
+            <div class="tip-label"> MẸO SINH TỒN DÀNH CHO DÂN VĂN PHÒNG:</div>
+            <div id="loading-tip">
+                "Lương 8 triệu, đọc tin nhắn một nửa - đó là nghệ thuật sống còn!"
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="main-menu">
+        <div class="menu-logo">UNFAIR ODYSSEY</div>
+        <div class="menu-subtitle">💀 Lương 8tr Edition - Đọc Tin Nhắn 50% 💀</div>
+        
+        <div class="menu-buttons">
+            <button class="menu-btn" onclick="gameManager.startGame()">
+                 BẮT ĐẦU NHIỆM VỤ
+            </button>
+            <button class="menu-btn" onclick="gameManager.showLevelSelect()">
+                 CHỌN MÀN CHƠI
+            </button>
+            <button class="menu-btn" onclick="gameManager.resetProgress()">
+                 RESET TIẾN TRÌNH
+            </button>
+        </div>
+
+        <div class="menu-stats">
+            <div class="stat-card">
+                <div class="stat-label">TỔNG CHẾT</div>
+                <div class="stat-value" id="menu-deaths">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">COINS</div>
+                <div class="stat-value" id="menu-coins">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">MÀN CAO NHẤT</div>
+                <div class="stat-value" id="menu-level">1</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Select -->
+    <div id="level-select">
+        <div class="level-select-header">
+            <div class="level-select-title">CHỌN SECTOR</div>
+        </div>
+
+        <div class="level-grid" id="level-grid">
+            <!-- Generated by JS -->
+        </div>
+
+        <button class="back-btn" onclick="gameManager.showMainMenu()">
+            ← TRỞ LẠI
+        </button>
+    </div>
+
+    <div id="game-container">
+    <div id="stage" class="hidden">
+        <!-- Background Layers -->
+        <div class="layer sky"></div>
+        <div class="layer nebula"></div>
+        <div class="layer stars"></div>
+        <div id="mountains-far" class="layer mountains-far"></div>
+        <div id="mountains-near" class="layer mountains-near"></div>
+
+        <!-- HUD -->
+        <div class="hud">
+            <div class="hud-item">
+                <div class="hud-label">STATUS</div>
+                <div class="hud-value" id="status">ACTIVE</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">SECTOR</div>
+                <div class="hud-value"><span id="lvl">1</span>/10</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">DEATHS</div>
+                <div class="hud-value" id="deaths">0</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">COINS</div>
+                <div class="hud-value" id="coins">0</div>
+            </div>
+            <div class="hud-item">
+                <div class="hud-label">TIME</div>
+                <div class="hud-value" id="timer">0:00</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <!-- Mini Map -->
+        <div class="minimap">
+            <div class="minimap-player" id="minimap-player"></div>
+            <div class="minimap-end"></div>
+            <div id="minimap-traps"></div>
+        </div>
+
+        <!-- Floor -->
+        <div id="floor"></div>
+
+        <!-- Player -->
+        <div id="player">
+            <div class="head">
+                <div class="eye eye-left"></div>
+                <div class="eye eye-right"></div>
+            </div>
+            <div class="torso"></div>
+            <div class="arm arm-left"></div>
+            <div class="arm arm-right"></div>
+            <div class="leg leg-l"></div>
+            <div class="leg leg-r"></div>
+        </div>
+
+        <!-- Waifu Target -->
+        <div id="waifu">
+            <div class="waifu-label">TARGET_LOCKED</div>
+            <div class="waifu-sprite"></div>
+        </div>
+
+        <!-- Dynamic Content Layer -->
+        <div id="traps-layer"></div>
+        <div id="particles-layer"></div>
+        <div id="warnings-layer"></div>
+
+        <!-- Tutorial -->
+        <div id="tutorial" class="tutorial">
+            <h3>⚡ CONTROLS</h3>
+            <div class="controls">
+                <div class="control-item">
+                    <div class="key">→</div>
+                    <span>Move Right</span>
+                </div>
+                <div class="control-item">
+                    <div class="key">←</div>
+                    <span>Move Left</span>
+                </div>
+                <div class="control-item">
+                    <div class="key">↑</div>
+                    <span>Jump</span>
+                </div>
+                <div class="control-item">
+                    <div class="key">↓</div>
+                    <span>Slide</span>
+                </div>
+            </div>
+            <button onclick="engine.closeTutorial()">START MISSION</button>
+        </div>
+
+        <!-- Pause Button -->
+        <div class="pause-btn" onclick="engine.togglePause()">⏸️</div>
+
+        <!-- Mobile Controls -->
+        <div class="mobile-controls">
+            <div class="control-btn" data-key="ArrowLeft">←</div>
+            <div class="control-btn" data-key="ArrowUp">↑</div>
+            <div class="control-btn" data-key="ArrowDown">↓</div>
+            <div class="control-btn" data-key="ArrowRight">→</div>
+        </div>
+
+        <!-- Overlays -->
+        <div id="msg-overlay" class="overlay">
+            <div class="card">
+                <h1 id="msg-title">SIGNAL LOST</h1>
+                <p id="msg-desc"></p>
+                <div id="stats-container"></div>
+                <div>
+                    <button onclick="engine.restart()">RETRY</button>
+                    <button onclick="engine.nextLevel()" id="next-btn">NEXT SECTOR</button>
+                    <button onclick="gameManager.showMainMenu()">🏠 MENU</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pause Overlay -->
+        <div id="pause-overlay" class="overlay">
+            <div class="card">
+                <h1 style="color: var(--warning);">⏸️ TẠM DỪNG</h1>
+                <p>Nghỉ tay chút đi boss! Lương 8tr mà làm căng thế 😎</p>
+                <div class="pause-menu-buttons">
+                    <button onclick="engine.togglePause()">▶️ TIẾP TỤC</button>
+                    <button onclick="engine.restartLevel()">↻ CHƠI LẠI MÀN</button>
+                    <button onclick="gameManager.showMainMenu()">🏠 VỀ MENU</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Notification -->
+        <div id="achievement" class="achievement">
+            <div class="achievement-title">🏆 ACHIEVEMENT UNLOCKED</div>
+            <div class="achievement-desc" id="achievement-desc"></div>
+        </div>
+    </div>
+    </div><!-- Close game-container -->
+
+<script>
+/**
+ * ═══════════════════════════════════════════════════════════
+ *  UNFAIR ODYSSEY: LƯƠNG 8 TRIỆU EDITION
+ *  Professional Game Engine - "Đọc Tin Nhắn 50%"
+ * ═══════════════════════════════════════════════════════════
+ */
+
+// Loading Tips về "Lương 8tr - Đọc tin 50%"
+const LOADING_TIPS = [
+    '"Lương 8 triệu, đọc tin nhắn một nửa" - Bí quyết dân văn phòng! 😎',
+    'Boss hỏi: "Xong việc chưa?" - Bạn: "Đang loading đây sếp ơi!" 💼',
+    'Tip: Nhảy cao = Tránh bẫy. Nhảy thấp = RIP. Đơn giản vậy thôi! 🦘',
+    'Game này khó hơn cả việc xin tăng lương! 💰',
+    'Chết 100 lần = Bạn sẽ... vẫn chết ở lần 101! 💀',
+    'Họp 1 tiếng = Thông tin 15 phút. Chơi game này cũng vậy! ⏰',
+    'Deadline và bẫy game: Đều đến bất ngờ và chết người! 📅',
+    'Lương 8tr nhưng skills tránh bẫy 80tr! Đáng giá! 🎯',
+    'Email dài 3 trang = Đọc 2 dòng đầu. Bẫy nhiều vậy = Tránh kiểu gì? 📧',
+    'Sếp: "Làm nhanh lên!" - Game: "Chạy nhanh lên!" - Kết quả: 💀',
+    'Lương tháng 8tr, tiền bonus = 0đ. Cũng giống game này: nhiều coin nhưng vô dụng! 🤑',
+    'OT không lương = Chơi game không được gì. Nhưng vẫn cứ chơi! 😅'
+];
+
+// Level Names
+const LEVEL_NAMES = [
+    'Intern Hell',
+    'Thử Việc Địa Ngục', 
+    'Meeting Marathon',
+    'Deadline Crisis',
+    'Boss Fight Zone',
+    'OT Nightmare',
+    'Email Storm',
+    'Coffee Break Trap',
+    'Salary Day Chaos',
+    'CEO Final Boss'
+];
+
+class LoadingManager {
+    constructor() {
+        this.progress = 0;
+        this.loadingScreen = document.getElementById('loading-screen');
+        this.loadingBar = document.getElementById('loading-bar');
+        this.loadingText = document.getElementById('loading-text');
+        this.loadingTip = document.getElementById('loading-tip');
+    }
+
+    start() {
+        this.showRandomTip();
+        this.simulateLoading();
+    }
+
+    showRandomTip() {
+        const tip = LOADING_TIPS[Math.floor(Math.random() * LOADING_TIPS.length)];
+        this.loadingTip.textContent = tip;
+    }
+
+    simulateLoading() {
+        const steps = [
+            { progress: 15, text: 'Đang tải bẫy gai nhọn... 🗡️', delay: 300 },
+            { progress: 30, text: 'Đang setup laser chết người... ⚡', delay: 400 },
+            { progress: 45, text: 'Đang chuẩn bị lưỡi cưa... ⚙️', delay: 350 },
+            { progress: 60, text: 'Đang test độ khó... 😈', delay: 300 },
+            { progress: 75, text: 'Đang tính lương 8tr/tháng... 💰', delay: 400 },
+            { progress: 90, text: 'Đang đọc 50% tin nhắn... 📱', delay: 300 },
+            { progress: 100, text: 'Sẵn sàng chiến! 🚀', delay: 200 }
+        ];
+
+        let currentStep = 0;
+
+        const loadStep = () => {
+            if (currentStep < steps.length) {
+                const step = steps[currentStep];
+                this.setProgress(step.progress, step.text);
+                currentStep++;
+                setTimeout(loadStep, step.delay);
+            } else {
+                setTimeout(() => this.complete(), 500);
+            }
+        };
+
+        loadStep();
+    }
+
+    setProgress(percent, text) {
+        this.progress = percent;
+        this.loadingBar.style.width = percent + '%';
+        this.loadingText.textContent = text;
+    }
+
+    complete() {
+        this.loadingScreen.classList.add('hidden');
+        gameManager.showMainMenu();
+    }
+}
+
+class GameManager {
+    constructor() {
+        this.maxLevel = parseInt(localStorage.getItem('unfair_max_level')) || 1;
+        this.currentLevel = 1;
+    }
+
+    showMainMenu() {
+        document.getElementById('stage').classList.add('hidden');
+        document.getElementById('level-select').classList.remove('active');
+        document.getElementById('main-menu').classList.add('active');
+        
+        // Update stats
+        const deaths = parseInt(localStorage.getItem('unfair_deaths')) || 0;
+        const coins = parseInt(localStorage.getItem('unfair_coins')) || 0;
+        
+        document.getElementById('menu-deaths').textContent = deaths;
+        document.getElementById('menu-coins').textContent = coins;
+        document.getElementById('menu-level').textContent = this.maxLevel;
+        
+        // Stop game if running
+        if (window.engine) {
+            engine.isPaused = true;
+        }
+    }
+
+    showLevelSelect() {
+        document.getElementById('main-menu').classList.remove('active');
+        document.getElementById('level-select').classList.add('active');
+        
+        this.renderLevelGrid();
+    }
+
+    renderLevelGrid() {
+        const grid = document.getElementById('level-grid');
+        grid.innerHTML = '';
+        
+        for (let i = 1; i <= CONFIG.GAME.totalLevels; i++) {
+            const card = document.createElement('div');
+            card.className = 'level-card';
+            
+            if (i > this.maxLevel) {
+                card.classList.add('locked');
+            } else {
+                card.onclick = () => this.startLevel(i);
+            }
+            
+            const levelStats = JSON.parse(localStorage.getItem(`unfair_level_${i}_stats`)) || {
+                deaths: 0,
+                coins: 0,
+                completed: false
+            };
+            
+            card.innerHTML = `
+                <div class="level-number">${i > this.maxLevel ? '🔒' : i}</div>
+                <div class="level-name">${LEVEL_NAMES[i-1]}</div>
+                <div class="level-stats">
+                    <div class="level-stat">
+                        <div class="level-stat-icon">💀</div>
+                        <div>${levelStats.deaths}</div>
+                    </div>
+                    <div class="level-stat">
+                        <div class="level-stat-icon">💰</div>
+                        <div>${levelStats.coins}</div>
+                    </div>
+                    <div class="level-stat">
+                        <div class="level-stat-icon">${levelStats.completed ? '✅' : '⏳'}</div>
+                    </div>
+                </div>
+            `;
+            
+            grid.appendChild(card);
+        }
+    }
+
+    startGame() {
+        this.startLevel(1);
+    }
+
+    startLevel(levelNum) {
+        this.currentLevel = levelNum;
+        document.getElementById('main-menu').classList.remove('active');
+        document.getElementById('level-select').classList.remove('active');
+        document.getElementById('stage').classList.remove('hidden');
+        
+        // Initialize or restart engine
+        if (!window.engine) {
+            window.engine = new GameEngine(levelNum);
+        } else {
+            engine.level = levelNum;
+            engine.setupLevel(levelNum);
+            engine.isPaused = false;
+        }
+    }
+
+    resetProgress() {
+        if (confirm('Bạn có chắc muốn xóa toàn bộ tiến trình?\n(Sẽ mất tất cả: deaths, coins, levels đã mở)')) {
+            localStorage.clear();
+            this.maxLevel = 1;
+            alert('Đã reset! Chúc may mắn lần này! 💀');
+            location.reload();
+        }
+    }
+}
+
+const CONFIG = {
+    // Physics Constants
+    PHYSICS: {
+        gravity: 0.8,
+        jumpForce: -16,
+        moveSpeed: 7,
+        slideSpeed: 9,
+        groundY: 80,
+        friction: 0.85
+    },
+    
+    // Game Settings
+    GAME: {
+        totalLevels: 10,
+        levelWidth: 2500,
+        invincibilityTime: 2000,
+        checkpointDistance: 800
+    },
+    
+    // Visual Settings
+    VISUAL: {
+        particlesPerStep: 2,
+        deathParticles: 20,
+        parallaxFarSpeed: 0.15,
+        parallaxNearSpeed: 0.4
+    }
+};
+
+class ParticleSystem {
+    constructor() {
+        this.particles = [];
+        this.layer = document.getElementById('particles-layer');
+    }
+
+    createDustParticles(x, y) {
+        for (let i = 0; i < CONFIG.VISUAL.particlesPerStep; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle dust-particle';
+            
+            const tx = (Math.random() - 0.5) * 40;
+            const ty = Math.random() * -30;
+            
+            particle.style.left = x + 'px';
+            particle.style.bottom = y + 'px';
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            
+            this.layer.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 1000);
+        }
+    }
+
+    createDeathExplosion(x, y) {
+        for (let i = 0; i < CONFIG.VISUAL.deathParticles; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle death-particle';
+            
+            const angle = (Math.PI * 2 * i) / CONFIG.VISUAL.deathParticles;
+            const speed = 50 + Math.random() * 50;
+            const tx = Math.cos(angle) * speed;
+            const ty = Math.sin(angle) * speed;
+            
+            particle.style.left = x + 'px';
+            particle.style.bottom = y + 'px';
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            
+            this.layer.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 800);
+        }
+    }
+
+    clear() {
+        this.layer.innerHTML = '';
+    }
+}
+
+class TrapGenerator {
+    constructor() {
+        this.trapTypes = [
+            'spike-trap',
+            'laser-beam',
+            'saw-blade',
+            'electric-field'
+        ];
+    }
+
+    generateLevel(levelNum) {
+        const traps = [];
+        const complexity = Math.min(levelNum, 8);
+        const trapCount = 8 + (complexity * 2);
+        const levelWidth = CONFIG.GAME.levelWidth;
+
+        // Generate varied traps with RANDOM appearances
+        for (let i = 0; i < trapCount; i++) {
+            const x = 250 + (i * (levelWidth / trapCount)) + (Math.random() * 150 - 75);
+            const trapType = this.trapTypes[Math.floor(Math.random() * this.trapTypes.length)];
+            
+            let trap = {
+                x: x,
+                type: trapType,
+                active: true,
+                // Random appearance settings
+                appearDelay: Math.random() * 2000, // 0-2 seconds delay
+                appearRandom: Math.random() < 0.4, // 40% chance of random pop
+                appearDistance: 80 + Math.random() * 120 // Distance trigger
+            };
+
+            // Type-specific properties
+            if (trapType === 'spike-trap') {
+                trap.hidden = (Math.random() < 0.6 && levelNum > 1); // 60% chance hidden
+                trap.popup = trap.hidden;
+                trap.fakeout = Math.random() < 0.2; // 20% chance it's a fake
+            } else if (trapType === 'laser-beam') {
+                trap.position = i % 2 === 0 ? 'top' : 'bottom';
+                trap.height = 200 + Math.random() * 150;
+                trap.blinking = Math.random() < 0.3; // 30% blink on/off
+                trap.blinkInterval = 800 + Math.random() * 700;
+            } else if (trapType === 'saw-blade') {
+                trap.moving = levelNum > 4 || Math.random() < 0.4;
+                trap.moveRange = 100 + Math.random() * 150;
+                trap.moveSpeed = 1.5 + Math.random() * 2;
+                trap.randomReverse = Math.random() < 0.3; // Random direction change
+            } else if (trapType === 'electric-field') {
+                trap.width = 60 + Math.random() * 40;
+                trap.strikeInterval = 400 + Math.random() * 800;
+                trap.randomStrike = true; // Always random
+            }
+
+            traps.push(trap);
+        }
+
+        // Add SURPRISE traps that appear randomly during gameplay
+        const surpriseCount = 3 + Math.floor(levelNum / 2);
+        for (let i = 0; i < surpriseCount; i++) {
+            traps.push({
+                type: 'spike-trap',
+                x: 300 + (Math.random() * (levelWidth - 600)),
+                hidden: true,
+                popup: true,
+                active: true,
+                surprise: true,
+                surpriseTime: 3000 + Math.random() * 10000, // Appear 3-13 seconds into level
+                appearDelay: 0,
+                appearRandom: true
+            });
+        }
+
+        // Add fake safe zones (traps that look safe but aren't!)
+        if (levelNum > 3) {
+            const fakeCount = 2 + Math.floor(levelNum / 3);
+            for (let i = 0; i < fakeCount; i++) {
+                traps.push({
+                    type: 'laser-beam',
+                    x: 400 + (Math.random() * (levelWidth - 800)),
+                    position: 'bottom',
+                    height: 100,
+                    active: false, // Starts inactive!
+                    surprise: true,
+                    surpriseTime: 5000 + Math.random() * 8000,
+                    appearDelay: 0,
+                    appearRandom: true
+                });
+            }
+        }
+
+        // Add special elements
+        if (levelNum > 2) {
+            // Teleporters
+            traps.push({
+                type: 'teleporter',
+                x: 400 + Math.random() * 300,
+                targetX: 1200 + Math.random() * 500,
+                active: true
+            });
+        }
+
+        if (levelNum > 3) {
+            // Moving platforms
+            for (let i = 0; i < 2; i++) {
+                traps.push({
+                    type: 'moving-platform',
+                    x: 500 + (i * 600),
+                    y: 150 + (i * 50),
+                    moveRange: 200,
+                    moveSpeed: 1.5,
+                    active: true
+                });
+            }
+        }
+
+        if (levelNum > 5) {
+            // Falling platforms
+            traps.push({
+                type: 'falling-platform',
+                x: 800 + Math.random() * 400,
+                y: 200,
+                active: true
+            });
+        }
+
+        // Add coins
+        const coinCount = 5 + levelNum;
+        for (let i = 0; i < coinCount; i++) {
+            traps.push({
+                type: 'coin',
+                x: 200 + (i * (levelWidth / coinCount)) + (Math.random() * 50),
+                y: 100 + Math.random() * 150,
+                collected: false
+            });
+        }
+
+        // Add checkpoints
+        const checkpointCount = Math.floor(levelWidth / CONFIG.GAME.checkpointDistance);
+        for (let i = 1; i <= checkpointCount; i++) {
+            traps.push({
+                type: 'checkpoint',
+                x: i * CONFIG.GAME.checkpointDistance,
+                activated: false
+            });
+        }
+
+        return traps;
+    }
+
+    createTrapElement(trap) {
+        const el = document.createElement('div');
+        el.className = 'trap';
+        
+        switch(trap.type) {
+            case 'spike-trap':
+                el.classList.add('spike-trap');
+                el.innerHTML = '<div class="spike"></div>';
+                el.style.left = trap.x + 'px';
+                el.style.bottom = trap.hidden ? '-50px' : '80px';
+                break;
+
+            case 'laser-beam':
+                el.classList.add('laser-beam');
+                el.style.left = trap.x + 'px';
+                if (trap.position === 'top') {
+                    el.style.top = '0';
+                    el.style.height = trap.height + 'px';
+                } else {
+                    el.style.bottom = '80px';
+                    el.style.height = trap.height + 'px';
+                }
+                break;
+
+            case 'saw-blade':
+                el.classList.add('saw-blade');
+                el.innerHTML = '<div class="saw"></div>';
+                el.style.left = trap.x + 'px';
+                trap.originalX = trap.x;
+                break;
+
+            case 'electric-field':
+                el.classList.add('electric-field');
+                el.style.left = trap.x + 'px';
+                el.style.width = trap.width + 'px';
+                // Create lightning bolts
+                for (let i = 0; i < 3; i++) {
+                    const lightning = document.createElement('div');
+                    lightning.className = 'lightning';
+                    lightning.style.setProperty('--pos', (i * 30 + 10) + 'px');
+                    lightning.style.animationDelay = (i * 0.15) + 's';
+                    el.appendChild(lightning);
+                }
+                break;
+
+            case 'teleporter':
+                el.classList.add('teleporter');
+                el.style.left = trap.x + 'px';
+                break;
+
+            case 'moving-platform':
+                el.classList.add('moving-platform');
+                el.style.left = trap.x + 'px';
+                el.style.bottom = trap.y + 'px';
+                trap.originalX = trap.x;
+                trap.direction = 1;
+                break;
+
+            case 'falling-platform':
+                el.classList.add('falling-platform');
+                el.style.left = trap.x + 'px';
+                el.style.bottom = trap.y + 'px';
+                break;
+
+            case 'coin':
+                el.classList.add('coin');
+                el.style.left = trap.x + 'px';
+                el.style.bottom = trap.y + 'px';
+                break;
+
+            case 'checkpoint':
+                el.classList.add('checkpoint');
+                el.classList.add('inactive');
+                el.innerHTML = `
+                    <div class="checkpoint-pole"></div>
+                    <div class="checkpoint-flag"></div>
+                `;
+                el.style.left = trap.x + 'px';
+                break;
+        }
+
+        trap.element = el;
+        return el;
+    }
+}
+
+class AchievementSystem {
+    constructor() {
+        this.achievements = {
+            firstDeath: { unlocked: false, title: 'First Blood', desc: 'Die for the first time' },
+            death10: { unlocked: false, title: 'Persistent', desc: 'Die 10 times' },
+            death50: { unlocked: false, title: 'Determination', desc: 'Die 50 times' },
+            speedrun: { unlocked: false, title: 'Speed Demon', desc: 'Complete a level in under 10 seconds' },
+            coinCollector: { unlocked: false, title: 'Collector', desc: 'Collect 50 coins' },
+            noDeathLevel: { unlocked: false, title: 'Flawless', desc: 'Complete a level without dying' },
+            allCheckpoints: { unlocked: false, title: 'Checkpoint Master', desc: 'Activate all checkpoints in a level' }
+        };
+        this.element = document.getElementById('achievement');
+    }
+
+    unlock(key) {
+        if (this.achievements[key] && !this.achievements[key].unlocked) {
+            this.achievements[key].unlocked = true;
+            this.show(this.achievements[key]);
+            this.save();
+        }
+    }
+
+    show(achievement) {
+        document.getElementById('achievement-desc').textContent = 
+            achievement.title + ': ' + achievement.desc;
+        this.element.classList.add('show');
+        
+        setTimeout(() => {
+            this.element.classList.remove('show');
+        }, 3000);
+    }
+
+    save() {
+        localStorage.setItem('unfair_achievements', JSON.stringify(this.achievements));
+    }
+
+    load() {
+        const saved = localStorage.getItem('unfair_achievements');
+        if (saved) {
+            this.achievements = { ...this.achievements, ...JSON.parse(saved) };
+        }
+    }
+}
+
+class GameEngine {
+    constructor(startLevel = 1) {
+        // Core Systems
+        this.particles = new ParticleSystem();
+        this.trapGen = new TrapGenerator();
+        this.achievements = new AchievementSystem();
+        
+        // Game State
+        this.level = startLevel;
+        this.deaths = parseInt(localStorage.getItem('unfair_deaths')) || 0;
+        this.totalCoins = parseInt(localStorage.getItem('unfair_coins')) || 0;
+        this.levelDeaths = 0;
+        this.levelCoins = 0;
+        this.levelStartTime = 0;
+        this.currentCheckpoint = { x: 100, level: this.level };
+        this.isPaused = false;
+        
+        // Player State
+        this.reset();
+        
+        // Elements
+        this.player = document.getElementById('player');
+        this.trapsLayer = document.getElementById('traps-layer');
+        this.warningsLayer = document.getElementById('warnings-layer');
+        
+        // Init
+        this.achievements.load();
+        this.init();
+    }
+
+    reset() {
+        this.posX = this.currentCheckpoint.x;
+        this.posY = 0;
+        this.velX = 0;
+        this.velY = 0;
+        this.isGrounded = true;
+        this.isSliding = false;
+        this.isDead = false;
+        this.isFinished = false;
+        this.isInvincible = false;
+        this.keys = {};
+        this.onPlatform = null;
+    }
+
+    init() {
+        this.updateHUD();
+        this.setupLevel(this.level);
+        this.bindControls();
+        this.showTutorial();
+        this.startTimer();
+        this.loop();
+    }
+
+    showTutorial() {
+        if (!localStorage.getItem('unfair_tutorial_seen')) {
+            document.getElementById('tutorial').style.display = 'block';
+        }
+    }
+
+    closeTutorial() {
+        document.getElementById('tutorial').style.display = 'none';
+        localStorage.setItem('unfair_tutorial_seen', 'true');
+    }
+
+    bindControls() {
+        // Keyboard
+        window.addEventListener('keydown', (e) => {
+            this.keys[e.code] = true;
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+                e.preventDefault();
+            }
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            this.keys[e.code] = false;
+        });
+
+        // Mobile Touch Controls
+        document.querySelectorAll('.control-btn').forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const key = btn.dataset.key;
+                this.keys[key] = true;
+            });
+            
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                const key = btn.dataset.key;
+                this.keys[key] = false;
+            });
+        });
+    }
+
+    setupLevel(lvl) {
+        this.reset();
+        this.levelStartTime = Date.now();
+        this.levelDeaths = 0;
+        this.levelCoins = 0;
+        
+        document.getElementById('lvl').textContent = lvl;
+        
+        // Clear previous level
+        this.trapsLayer.innerHTML = '';
+        this.warningsLayer.innerHTML = '';
+        this.particles.clear();
+        
+        // Show waifu on final level
+        document.getElementById('waifu').style.display = (lvl === 10) ? 'block' : 'none';
+        
+        // Generate level
+        this.currentTraps = this.trapGen.generateLevel(lvl);
+        
+        // Create trap elements
+        this.currentTraps.forEach(trap => {
+            const el = this.trapGen.createTrapElement(trap);
+            this.trapsLayer.appendChild(el);
+            
+            // Setup random appearances
+            if (trap.surprise && trap.surpriseTime) {
+                // Hide initially
+                if (trap.type === 'spike-trap') {
+                    trap.element.style.bottom = '-50px';
+                    trap.element.style.opacity = '0';
+                } else if (trap.type === 'laser-beam') {
+                    trap.element.style.opacity = '0';
+                }
+                
+                // Schedule surprise appearance
+                setTimeout(() => {
+                    if (trap.type === 'spike-trap') {
+                        trap.element.style.transition = 'all 0.2s ease-out';
+                        trap.element.style.bottom = '80px';
+                        trap.element.style.opacity = '1';
+                        // Shake effect
+                        trap.element.style.animation = 'shake 0.5s';
+                    } else if (trap.type === 'laser-beam') {
+                        trap.active = true;
+                        trap.element.style.transition = 'opacity 0.3s';
+                        trap.element.style.opacity = '1';
+                    }
+                }, trap.surpriseTime);
+            }
+            
+            // Setup blinking lasers
+            if (trap.type === 'laser-beam' && trap.blinking) {
+                setInterval(() => {
+                    if (trap.active) {
+                        trap.active = false;
+                        trap.element.style.opacity = '0.2';
+                    } else {
+                        trap.active = true;
+                        trap.element.style.opacity = '1';
+                    }
+                }, trap.blinkInterval);
+            }
+            
+            // Create warning signs for dangerous traps
+            if (['spike-trap', 'laser-beam', 'saw-blade'].includes(trap.type) && 
+                !trap.hidden && Math.random() < 0.3) {
+                this.createWarningSign(trap.x);
+            }
+        });
+
+        this.updateMinimap();
+    }
+
+    createWarningSign(x) {
+        const warning = document.createElement('div');
+        warning.className = 'warning-sign';
+        warning.innerHTML = '<div class="warning-triangle"></div>';
+        warning.style.left = x + 'px';
+        this.warningsLayer.appendChild(warning);
+    }
+
+    update() {
+        if (this.isDead || this.isFinished || this.isPaused) return;
+
+        const prevX = this.posX;
+
+        // Input Handling
+        let moving = false;
+        
+        if (this.keys['ArrowRight'] || this.keys['KeyD']) {
+            const speed = this.isSliding ? CONFIG.PHYSICS.slideSpeed : CONFIG.PHYSICS.moveSpeed;
+            this.posX += speed;
+            this.player.classList.add('running');
+            moving = true;
+        }
+        
+        if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
+            const speed = this.isSliding ? CONFIG.PHYSICS.slideSpeed : CONFIG.PHYSICS.moveSpeed;
+            this.posX -= speed;
+            this.player.classList.add('running');
+            moving = true;
+        }
+
+        if (!moving) {
+            this.player.classList.remove('running');
+        }
+
+        // Jump
+        if ((this.keys['ArrowUp'] || this.keys['KeyW'] || this.keys['Space']) && 
+            (this.isGrounded || this.onPlatform)) {
+            this.velY = CONFIG.PHYSICS.jumpForce;
+            this.isGrounded = false;
+            this.onPlatform = null;
+            this.player.classList.add('jumping');
+        } else {
+            this.player.classList.remove('jumping');
+        }
+
+        // Slide
+        if ((this.keys['ArrowDown'] || this.keys['KeyS']) && 
+            (this.isGrounded || this.onPlatform)) {
+            this.isSliding = true;
+            this.player.classList.add('sliding');
+        } else {
+            this.isSliding = false;
+            this.player.classList.remove('sliding');
+        }
+
+        // Physics
+        this.velY += CONFIG.PHYSICS.gravity;
+        this.posY += this.velY;
+
+        // Platform collision
+        let onAnyPlatform = false;
+        this.currentTraps.forEach(trap => {
+            if ((trap.type === 'moving-platform' || trap.type === 'falling-platform') && 
+                trap.active) {
+                const pRect = this.getPlayerRect();
+                const tRect = trap.element.getBoundingClientRect();
+                
+                if (pRect.bottom >= tRect.top - 5 && 
+                    pRect.bottom <= tRect.top + 10 &&
+                    pRect.right > tRect.left && 
+                    pRect.left < tRect.right &&
+                    this.velY >= 0) {
+                    this.posY = tRect.top - CONFIG.PHYSICS.groundY;
+                    this.velY = 0;
+                    this.isGrounded = true;
+                    this.onPlatform = trap;
+                    onAnyPlatform = true;
+
+                    // Falling platform trigger
+                    if (trap.type === 'falling-platform' && !trap.falling) {
+                        trap.falling = true;
+                        setTimeout(() => {
+                            trap.element.classList.add('falling');
+                            trap.active = false;
+                        }, 500);
+                    }
+                }
+            }
+        });
+
+        if (!onAnyPlatform) {
+            this.onPlatform = null;
+        }
+
+        // Ground collision
+        if (this.posY > 0) {
+            this.posY = 0;
+            this.velY = 0;
+            this.isGrounded = true;
+        }
+
+        // Boundaries
+        this.posX = Math.max(0, Math.min(this.posX, CONFIG.GAME.levelWidth));
+
+        // Update DOM
+        this.player.style.left = this.posX + 'px';
+        this.player.style.bottom = (CONFIG.PHYSICS.groundY - this.posY) + 'px';
+
+        // Effects
+        if (moving && this.isGrounded && Math.random() < 0.3) {
+            this.particles.createDustParticles(
+                this.posX + 15,
+                CONFIG.PHYSICS.groundY
+            );
+        }
+
+        // Update parallax
+        this.updateParallax();
+        
+        // Update minimap
+        this.updateMinimap();
+
+        // Check interactions
+        this.checkTraps();
+        this.checkCollectibles();
+        this.checkCheckpoints();
+        this.checkTeleporters();
+        this.checkWin();
+        
+        // Update moving traps
+        this.updateMovingTraps();
+    }
+
+    getPlayerRect() {
+        return {
+            left: this.posX,
+            right: this.posX + 35,
+            top: CONFIG.PHYSICS.groundY - this.posY - (this.isSliding ? 25 : 60),
+            bottom: CONFIG.PHYSICS.groundY - this.posY
+        };
+    }
+
+    checkTraps() {
+        if (this.isInvincible) return;
+
+        const pRect = this.getPlayerRect();
+
+        this.currentTraps.forEach(trap => {
+            if (!trap.element) return;
+
+            // Popup spikes with RANDOM timing
+            if (trap.type === 'spike-trap' && trap.popup && !trap.popped) {
+                const distance = this.posX - trap.x;
+                
+                if (trap.appearRandom) {
+                    // Random popup - appears when player is within random range
+                    if (distance > -trap.appearDistance && distance < 50) {
+                        setTimeout(() => {
+                            if (trap.element && trap.popup) {
+                                trap.element.style.transition = 'all 0.15s ease-out';
+                                trap.element.style.bottom = '80px';
+                                trap.element.style.opacity = '1';
+                                trap.popup = false;
+                                trap.popped = true;
+                                
+                                // Shake effect for drama
+                                trap.element.style.transform = 'translateY(-10px)';
+                                setTimeout(() => {
+                                    if (trap.element) {
+                                        trap.element.style.transform = 'translateY(0)';
+                                    }
+                                }, 150);
+                            }
+                        }, trap.appearDelay);
+                    }
+                } else {
+                    // Normal popup at fixed distance
+                    if (distance > -100 && !trap.popped) {
+                        trap.element.style.bottom = '80px';
+                        trap.element.style.opacity = '1';
+                        trap.popup = false;
+                        trap.popped = true;
+                    }
+                }
+            }
+            
+            // Fakeout traps - look dangerous but harmless (for now...)
+            if (trap.fakeout && trap.type === 'spike-trap' && !trap.revealed) {
+                if (Math.abs(this.posX - trap.x) < 30) {
+                    trap.revealed = true;
+                    // Make it real after player passes (evil!)
+                    setTimeout(() => {
+                        trap.fakeout = false;
+                        trap.active = true;
+                    }, 1000);
+                }
+            }
+
+            if (!trap.active) return;
+
+            const tRect = trap.element.getBoundingClientRect();
+            const stage = document.getElementById('stage').getBoundingClientRect();
+
+            // Convert to stage-relative coordinates
+            const trapBox = {
+                left: tRect.left - stage.left,
+                right: tRect.right - stage.left,
+                top: tRect.top - stage.top,
+                bottom: tRect.bottom - stage.top
+            };
+
+            const playerBox = {
+                left: pRect.left,
+                right: pRect.right,
+                top: stage.height - pRect.top,
+                bottom: stage.height - pRect.bottom
+            };
+
+            // Collision detection
+            if (!(playerBox.right < trapBox.left || 
+                  playerBox.left > trapBox.right || 
+                  playerBox.bottom < trapBox.top || 
+                  playerBox.top > trapBox.bottom)) {
+                
+                // Special cases
+                if (trap.type === 'laser-beam' && trap.position === 'top' && this.isSliding) {
+                    return; // Can slide under top lasers
+                }
+
+                if (trap.type === 'electric-field') {
+                    // Random shock
+                    if (Math.random() < 0.1) {
+                        this.die(`ELECTROCUTED: ${Math.floor(Math.random() * 10000)} volts`);
+                    }
+                } else {
+                    this.die(this.getDeathMessage(trap.type));
+                }
+            }
+        });
+    }
+
+    checkCollectibles() {
+        const pRect = this.getPlayerRect();
+
+        this.currentTraps.forEach(trap => {
+            if (trap.type === 'coin' && !trap.collected && trap.element) {
+                const tRect = trap.element.getBoundingClientRect();
+                const stage = document.getElementById('stage').getBoundingClientRect();
+
+                const trapX = tRect.left - stage.left + 15;
+                const trapY = stage.height - (tRect.top - stage.top) - 15;
+
+                const dist = Math.hypot(
+                    (pRect.left + pRect.right) / 2 - trapX,
+                    (pRect.top + pRect.bottom) / 2 - trapY
+                );
+
+                if (dist < 40) {
+                    trap.collected = true;
+                    trap.element.style.animation = 'coinFloat 0.3s ease-out forwards';
+                    trap.element.style.transform = 'scale(1.5)';
+                    trap.element.style.opacity = '0';
+                    
+                    this.levelCoins++;
+                    this.totalCoins++;
+                    this.updateHUD();
+
+                    setTimeout(() => trap.element.remove(), 300);
+
+                    // Achievement check
+                    if (this.totalCoins >= 50) {
+                        this.achievements.unlock('coinCollector');
+                    }
+                }
+            }
+        });
+    }
+
+    checkCheckpoints() {
+        const pRect = this.getPlayerRect();
+
+        this.currentTraps.forEach(trap => {
+            if (trap.type === 'checkpoint' && !trap.activated && trap.element) {
+                const tRect = trap.element.getBoundingClientRect();
+                const stage = document.getElementById('stage').getBoundingClientRect();
+                const trapX = tRect.left - stage.left;
+
+                if (Math.abs((pRect.left + pRect.right) / 2 - trapX - 25) < 50) {
+                    trap.activated = true;
+                    trap.element.classList.remove('inactive');
+                    this.currentCheckpoint = { x: trap.x - 50, level: this.level };
+                    
+                    // Flash effect
+                    trap.element.style.animation = 'none';
+                    setTimeout(() => {
+                        trap.element.style.animation = '';
+                    }, 10);
+                }
+            }
+        });
+    }
+
+    checkTeleporters() {
+        const pRect = this.getPlayerRect();
+
+        this.currentTraps.forEach(trap => {
+            if (trap.type === 'teleporter' && trap.active && trap.element) {
+                const tRect = trap.element.getBoundingClientRect();
+                const stage = document.getElementById('stage').getBoundingClientRect();
+
+                const trapBox = {
+                    left: tRect.left - stage.left,
+                    right: tRect.right - stage.left,
+                    top: tRect.top - stage.top,
+                    bottom: tRect.bottom - stage.top
+                };
+
+                const playerBox = {
+                    left: pRect.left,
+                    right: pRect.right,
+                    top: stage.height - pRect.top,
+                    bottom: stage.height - pRect.bottom
+                };
+
+                if (!(playerBox.right < trapBox.left || 
+                      playerBox.left > trapBox.right || 
+                      playerBox.bottom < trapBox.top || 
+                      playerBox.top > trapBox.bottom)) {
+                    
+                    // Teleport
+                    this.posX = trap.targetX;
+                    trap.active = false;
+                    
+                    // Visual effect
+                    for (let i = 0; i < 15; i++) {
+                        setTimeout(() => {
+                            this.particles.createDustParticles(
+                                this.posX + 15,
+                                CONFIG.PHYSICS.groundY + Math.random() * 50
+                            );
+                        }, i * 20);
+                    }
+                }
+            }
+        });
+    }
+
+    updateMovingTraps() {
+        this.currentTraps.forEach(trap => {
+            if (trap.type === 'saw-blade' && trap.moving) {
+                if (!trap.moveDir) trap.moveDir = 1;
+                
+                trap.x += trap.moveSpeed * trap.moveDir;
+                
+                if (Math.abs(trap.x - trap.originalX) > trap.moveRange) {
+                    trap.moveDir *= -1;
+                }
+                
+                // Random direction change for chaos!
+                if (trap.randomReverse && Math.random() < 0.01) {
+                    trap.moveDir *= -1;
+                }
+                
+                trap.element.style.left = trap.x + 'px';
+            }
+
+            if (trap.type === 'moving-platform') {
+                if (!trap.direction) trap.direction = 1;
+                
+                trap.x += trap.moveSpeed * trap.direction;
+                
+                if (Math.abs(trap.x - trap.originalX) > trap.moveRange) {
+                    trap.direction *= -1;
+                }
+                
+                trap.element.style.left = trap.x + 'px';
+
+                // Move player with platform
+                if (this.onPlatform === trap) {
+                    this.posX += trap.moveSpeed * trap.direction;
+                }
+            }
+        });
+    }
+
+    checkWin() {
+        if (this.posX > CONFIG.GAME.levelWidth - 100) {
+            this.isFinished = true;
+            
+            const levelTime = (Date.now() - this.levelStartTime) / 1000;
+            
+            // Save level stats
+            const stats = {
+                deaths: this.levelDeaths,
+                coins: this.levelCoins,
+                time: levelTime,
+                completed: true
+            };
+            localStorage.setItem(`unfair_level_${this.level}_stats`, JSON.stringify(stats));
+            
+            // Unlock next level
+            if (this.level >= gameManager.maxLevel && this.level < CONFIG.GAME.totalLevels) {
+                gameManager.maxLevel = this.level + 1;
+                localStorage.setItem('unfair_max_level', gameManager.maxLevel);
+            }
+            
+            // Achievement checks
+            if (levelTime < 10) {
+                this.achievements.unlock('speedrun');
+            }
+            
+            if (this.levelDeaths === 0 && this.level > 1) {
+                this.achievements.unlock('noDeathLevel');
+            }
+
+            if (this.level < CONFIG.GAME.totalLevels) {
+                this.showLevelComplete(levelTime);
+            } else {
+                this.showGameComplete(levelTime);
+            }
+        }
+    }
+
+    togglePause() {
+        this.isPaused = !this.isPaused;
+        const overlay = document.getElementById('pause-overlay');
+        
+        if (this.isPaused) {
+            overlay.style.display = 'flex';
+        } else {
+            overlay.style.display = 'none';
+        }
+    }
+
+    restartLevel() {
+        this.isPaused = false;
+        document.getElementById('pause-overlay').style.display = 'none';
+        this.restart();
+    }
+
+    die(reason) {
+        if (this.isDead || this.isInvincible) return;
+        
+        this.isDead = true;
+        this.deaths++;
+        this.levelDeaths++;
+        localStorage.setItem('unfair_deaths', this.deaths);
+        
+        // Death explosion
+        this.particles.createDeathExplosion(
+            this.posX + 17,
+            CONFIG.PHYSICS.groundY - this.posY + 30
+        );
+        
+        // Hide player
+        this.player.style.opacity = '0';
+        
+        // Achievement checks
+        if (this.deaths === 1) {
+            this.achievements.unlock('firstDeath');
+        } else if (this.deaths === 10) {
+            this.achievements.unlock('death10');
+        } else if (this.deaths === 50) {
+            this.achievements.unlock('death50');
+        }
+
+        setTimeout(() => {
+            this.showDeathScreen(reason);
+        }, 800);
+    }
+
+    getDeathMessage(trapType) {
+        const messages = {
+            'spike-trap': [
+                ' Bạn vừa thành "xiên que người"!',
+                ' Gai nhọn: "Chào mừng đến với cái kết nhọn!"',
+                'Chết kiểu "kebab" - không ngon đâu!',
+                'Trông như nhím rồi đấy!',
+                'Bullseye! Nhưng mà... RIP!',
+                'Gai: "Anh thích em từ cái nhìn đầu tiên!"',
+                'Cây xương rồng cũng không nguy hiểm bằng cái này!',
+                'Bạn nghĩ mình là Superman à? LOL!',
+                'Xiếc đoàn gọi, họ muốn lấy lại kỹ năng tung người!',
+                'Nướng xiên: Level failed edition!',
+                '"Ối, gai!" - Last words famous!',
+                ' Spike: "Im not gonna hurt ya..." SIKE!',
+                ' Gai này nhọn hơn cả lời boss chê!',
+                ' Chết kiểu "shish kebab" - Michelin 0 sao!',
+                ' "Có gì đâu mà sợ" - Narrator: He was wrong!',
+                ' Gai: "Mời anh vào đây!" - Bạn: "OK!" - RIP!'
+            ],
+            'laser-beam': [
+                ' Bị nướng bằng tia laser - well done!',
+                '⚡ Pew pew! Bạn tan thành khói rồi!',
+                '🌟 Ánh sáng cuối cùng bạn thấy... là laser!',
+                '💥 Thành tro bụi trong 0.1 giây!',
+                '🔴 Laser: "You shall not pass!" - Gandalf đâu rồi?',
+                '✨ Bạn vừa bị "photoshop" khỏi thế giới!',
+                '🎆 Pháo hoa người - không nên thử ở nhà!',
+                '👻 Biến thành plasma... Khoa học!',
+                '🌈 Ánh sáng màu đỏ đẹp nhỉ? Ối chết!',
+                '⚰️ Laser hair removal... toàn thân. OOPS!',
+                '☄️ Vừa bị "delete" khỏi cuộc đời!',
+                '🔥 Nướng instant - không cần lò vi sóng!',
+                '⚡ Laser này mạnh hơn ánh mắt sếp lúc deadline!',
+                '💀 Star Wars called: They want their lightsaber back!',
+                '🔴 "Đỏ đẹp nhỉ?" - Famous last thoughts!',
+                '⚰️ BBQ người: Không khuyến khích!'
+            ],
+            'saw-blade': [
+                '⚙️ Lưỡi cưa: "Cắt đứt hy vọng của bạn rồi!"',
+                '🔪 Thành lát mỏng... không phải salami!',
+                '💀 Nghe tiếng "bzzzz"... đã muộn rồi!',
+                '🎪 Ảo thuật cắt người - nhưng không ghép lại được!',
+                '😱 Pizza cutter nhưng size XXL!',
+                '⚡ Ninja blade không kịp né!',
+                '🌀 Xoay tròn đời người... theo nghĩa đen!',
+                '🎡 Vòng quay tử thần - vé một chiều!',
+                '💔 Cưa: "Chia tay nhé!" - Quá đau!',
+                '🏭 Nhà máy chế biến... game over!',
+                '⚙️ Lưỡi cưa không hiểu tại sao bạn lại nhảy vào!',
+                '😵 "Buzz saw my way out" - Không được đâu bạn ơi!',
+                '🔪 Cưa này cắt nhanh hơn cả boss cắt bonus!',
+                '⚙️ Saw: "I want to play a game" - Bạn thua rồi!',
+                '💀 Minced meat: Human edition!',
+                '🌀 Vòng xoay định mệnh - Không may mắn!'
+            ],
+            'electric-field': [
+                '⚡ Giật điện: 220V niềm vui... 440V cái chết!',
+                '💥 Bị sốc... kiểu chết luôn!',
+                '🔌 Cắm nhầm ổ điện đời người!',
+                '⚡ Pikachu dùng Thunder Shock! Super effective!',
+                '😵 Tóc dựng đứng... và mất mạng!',
+                '🌩️ Sấm sét nội bộ - không bảo hiểm!',
+                '💀 Từ người thành... người điện!',
+                '⚡ Tesla gọi, muốn nghiên cứu case của bạn!',
+                '🔋 Battery 100%... của thần chết!',
+                '💡 Sáng lên rồi tắt... luôn!',
+                '⚡ Điện giật mạnh hơn cả deadline!',
+                '😱 "Shocking!" - In every sense!',
+                '🔌 Cú điện giật mạnh hơn email sếp lúc 11h đêm!',
+                '⚡ Điện lực VN: "Chưa đóng tiền à?"',
+                '💥 Từ thịt người thành... thịt nướng điện!',
+                '⚡ AC/DC cũng không bay được cao thế này!'
+            ],
+            'moving-platform': [
+                '🚂 Tàu không chờ... và bạn rơi!',
+                '⬇️ Rơi xuống vực: "Wheeeee... oh no!"',
+                '🎢 Roller coaster nhưng không vui!',
+                '💀 Platform: "Tạm biệt!" - Bạn: "Đợi tôi!" *splat*',
+                '🏃 Chạy không kịp = Game over!',
+                '😱 Độ cao này... không cần dù!',
+                '⚰️ Rơi tự do... và tự chết!',
+                '🎪 Nhảy xa Olympic... xuống địa ngục!',
+                '💔 Platform friendzone: "Mình không hợp đâu!"',
+                '🌊 Không có nước bên dưới đâu bạn ơi!',
+                '🚂 Bục chạy nhanh hơn cả thời gian lên lương!',
+                '⬇️ Gravity: "Let me introduce myself!"',
+                '💀 "Bục đợi tôi!" - Bục: "Không!"',
+                '🎢 Bạn yêu cầu: Vui vẻ. Bạn nhận được: Chết!',
+                '⚰️ Free fall - không free đâu nhé!',
+                '😱 Rơi nhanh hơn cả career của người OT không lương!'
+            ],
+            'falling-platform': [
+                '📉 Sàn sập: "Surprise motherfucker!"',
+                '😨 Đứng lâu quá = chết!',
+                '🏗️ Chất lượng sàn: 0 sao - không nên tin!',
+                '💀 Kỹ sư xây sàn bị đuổi việc rồi!',
+                '⚰️ Sập như... hy vọng của bạn!',
+                '🎪 Magic trick: Sàn biến mất!',
+                '😱 "Sàn ơi đừng bỏ tôi!" - Too late!',
+                '💔 Betrayed by the floor!',
+                '🌪️ Bay xuống địa ngục express!',
+                '⚡ Trọng lực: "Let me introduce myself!"',
+                '📉 Sàn sập nhanh hơn giá Bitcoin!',
+                '🏗️ Xây dựng: "Chất lượng cao!" - Narrator: Không!',
+                '💀 Sàn phản bội như đồng nghiệp!',
+                '😱 Trust issues with platforms now!',
+                '⚰️ Sập như morale sau meeting thứ 5 trong ngày!'
+            ],
+            'general': [
+                '💀 Bạn chết rồi... Again!',
+                '😵 Game Over - Skill issue detected!',
+                '⚰️ Press F to pay respect... to yourself!',
+                '💔 Thua rồi bạn ơi!',
+                '😱 Chết chưa? Chết rồi!',
+                '🎮 Noob detected! System shutting down...',
+                '💀 "Ez game" - Narrator: It was not ez',
+                '😭 Khóc đi, rồi chơi lại!',
+                '⚡ Reflexes: 404 Not Found',
+                '🏆 Achievement: Professional Die-er!',
+                '💥 Boom! Headshot... from yourself!',
+                '😂 HAHAHA... *ahem* Thử lại đi!',
+                '🎯 Mission Failed... We\'ll get \'em next time!',
+                '💀 Chết nhiều vậy không mệt à?',
+                '⚰️ RIP - Rest In... Play again!',
+                '😵 Lương 8tr nhưng skill 80k!',
+                '💀 Boss hỏi: "Việc xong chưa?" - Bạn: *chết*',
+                '⚰️ Chết nhiều hơn số email chưa đọc!',
+                '😱 Plot twist: Bạn mới là bẫy!',
+                '🎮 Game: Hard. Bạn: Harder to survive!',
+                '💀 Darwin Award nominee detected!',
+                '⚡ Speed: 100. Skill: 0. Death: 1.',
+                '😭 "I can do this!" - Narrator: He could not.',
+                '💔 Chết kiểu "wtf just happened"!',
+                '🎪 Performance review: 0/10 - Would not hire!',
+                '💀 Chết nhiều hơn lần boss nói "cố gắng"!',
+                '😵 Skills level: Intern. Traps level: CEO!',
+                '⚰️ Thử việc thất bại - không qua vòng 1!',
+                '🎯 KPI tháng này: 100 deaths achieved!',
+                '💀 "Lần này chắc được!" - Narrator: Nope!'
+            ]
+        };
+
+        const options = messages[trapType] || messages['general'];
+        return options[Math.floor(Math.random() * options.length)];
+    }
+
+    makeInvincible() {
+        this.isInvincible = true;
+        this.player.classList.add('invincible');
+        
+        setTimeout(() => {
+            this.isInvincible = false;
+            this.player.classList.remove('invincible');
+        }, CONFIG.GAME.invincibilityTime);
+    }
+
+    showDeathScreen(reason) {
+        document.getElementById('msg-title').textContent = 'SYNC LOST';
+        document.getElementById('msg-title').style.color = 'var(--danger)';
+        document.getElementById('msg-desc').textContent = reason;
+        
+        const stats = `
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">LEVEL DEATHS</div>
+                    <div class="stat-value">${this.levelDeaths}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">TOTAL DEATHS</div>
+                    <div class="stat-value">${this.deaths}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">COINS</div>
+                    <div class="stat-value">${this.levelCoins}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('stats-container').innerHTML = stats;
+        
+        document.getElementById('msg-overlay').style.display = 'flex';
+    }
+
+    showLevelComplete(time) {
+        document.getElementById('msg-title').textContent = 'SECTOR CLEARED';
+        document.getElementById('msg-title').style.color = 'var(--success)';
+        document.getElementById('msg-desc').textContent = 
+            `✅ ${LEVEL_NAMES[this.level-1]} hoàn thành!\nChuyển sang Sector ${this.level + 1}: ${LEVEL_NAMES[this.level]}`;
+        
+        const stats = `
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">TIME</div>
+                    <div class="stat-value">${time.toFixed(1)}s</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">DEATHS</div>
+                    <div class="stat-value">${this.levelDeaths}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">COINS</div>
+                    <div class="stat-value">${this.levelCoins}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('stats-container').innerHTML = stats;
+        document.getElementById('next-btn').style.display = 'inline-block';
+        
+        document.getElementById('msg-overlay').style.display = 'flex';
+    }
+
+    showGameComplete(time) {
+        document.getElementById('msg-title').textContent = '🏆 HOÀN THÀNH TOÀN BỘ!';
+        document.getElementById('msg-title').style.color = 'var(--waifu)';
+        document.getElementById('msg-desc').textContent = 
+            '🎉 Chúc mừng! Bạn đã vượt qua tất cả 10 màn!\nLương 8tr nhưng skills triệu đô! 💰';
+        
+        const stats = `
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">TOTAL DEATHS</div>
+                    <div class="stat-value">${this.deaths}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">TOTAL COINS</div>
+                    <div class="stat-value">${this.totalCoins}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">RANK</div>
+                    <div class="stat-value">${this.getRank()}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('stats-container').innerHTML = stats;
+        document.getElementById('next-btn').style.display = 'none';
+        
+        document.getElementById('msg-overlay').style.display = 'flex';
+    }
+
+    getRank() {
+        if (this.deaths < 20) return '🏆 S';
+        if (this.deaths < 50) return '🥇 A';
+        if (this.deaths < 100) return '🥈 B';
+        if (this.deaths < 200) return '🥉 C';
+        return '💀 D';
+    }
+
+    restart() {
+        this.player.style.opacity = '1';
+        this.isDead = false;
+        this.isFinished = false;
+        this.currentCheckpoint = { x: 100, level: this.level };
+        this.setupLevel(this.level);
+        this.makeInvincible();
+        this.updateHUD();
+        document.getElementById('msg-overlay').style.display = 'none';
+    }
+
+    nextLevel() {
+        if (this.level < CONFIG.GAME.totalLevels) {
+            this.level++;
+            this.currentCheckpoint = { x: 100, level: this.level };
+            this.player.style.opacity = '1';
+            this.isDead = false;
+            this.isFinished = false;
+            this.setupLevel(this.level);
+            this.updateHUD();
+            document.getElementById('msg-overlay').style.display = 'none';
+        }
+    }
+
+    updateHUD() {
+        document.getElementById('deaths').textContent = this.deaths;
+        document.getElementById('coins').textContent = this.totalCoins;
+        
+        const progress = (this.posX / CONFIG.GAME.levelWidth) * 100;
+        document.getElementById('progress').style.width = Math.min(progress, 100) + '%';
+    }
+
+    startTimer() {
+        this.timerStart = Date.now();
+        setInterval(() => {
+            if (!this.isDead && !this.isFinished) {
+                const elapsed = Math.floor((Date.now() - this.timerStart) / 1000);
+                document.getElementById('timer').textContent = this.formatTime(elapsed);
+            }
+        }, 1000);
+    }
+
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    updateParallax() {
+        const farOffset = this.posX * CONFIG.VISUAL.parallaxFarSpeed;
+        const nearOffset = this.posX * CONFIG.VISUAL.parallaxNearSpeed;
+        
+        document.getElementById('mountains-far').style.transform = 
+            `translateX(-${farOffset}px)`;
+        document.getElementById('mountains-near').style.transform = 
+            `translateX(-${nearOffset}px)`;
+    }
+
+    updateMinimap() {
+        const minimapPlayer = document.getElementById('minimap-player');
+        const progress = (this.posX / CONFIG.GAME.levelWidth) * 180;
+        minimapPlayer.style.left = (10 + progress) + 'px';
+    }
+
+    loop() {
+        this.update();
+        requestAnimationFrame(() => this.loop());
+    }
+}
+
+// Initialize Game Systems
+const gameManager = new GameManager();
+const loadingManager = new LoadingManager();
+
+// Start loading on page load
+window.addEventListener('DOMContentLoaded', () => {
+    loadingManager.start();
+});
+
+// Prevent context menu on mobile
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+// Disable pull-to-refresh on mobile
+document.body.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Prevent accidental page navigation
+window.addEventListener('beforeunload', (e) => {
+    if (window.engine && !engine.isDead && !engine.isFinished) {
+        e.preventDefault();
+        e.returnValue = 'Game đang chơi dở! Chắc chắn muốn thoát?';
+        return e.returnValue;
+    }
+});
+
+</script>
+</body>
+</html>
